@@ -31,62 +31,150 @@ export default function App() {
   const appRef = useRef(null);
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const playingRef = useRef(false);
+  const userPausedManually = useRef(false);
+  const wasPlayingBeforeHide = useRef(false);
 
-  // Audio Handler
+  useEffect(() => {
+    playingRef.current = playing;
+  }, [playing]);
+
+  // Audio Handler - starts audio with volume fade up to 40%
   const startAudio = async () => {
-    if (!audioRef.current || playing) return;
+    if (!audioRef.current || playingRef.current) return;
     try {
       audioRef.current.volume = 0;
       await audioRef.current.play();
       setPlaying(true);
-      gsap.to(audioRef.current, { volume: 0.4, duration: 2 });
+      userPausedManually.current = false;
+      gsap.to(audioRef.current, { volume: 0.4, duration: 1.8 });
     } catch {
-      // Browser prevented audio — user must click
+      // Browser blocked unmuted autoplay — waiting for user gesture (tap/scroll)
     }
   };
 
   const toggleMusic = async () => {
     if (!audioRef.current) return;
     if (playing) {
+      userPausedManually.current = true;
       gsap.to(audioRef.current, {
         volume: 0,
-        duration: 0.8,
+        duration: 0.6,
         onComplete: () => {
           audioRef.current.pause();
           setPlaying(false);
         }
       });
     } else {
+      userPausedManually.current = false;
       audioRef.current.volume = 0;
       try {
         await audioRef.current.play();
         setPlaying(true);
-        gsap.to(audioRef.current, { volume: 0.4, duration: 1.5 });
+        gsap.to(audioRef.current, { volume: 0.4, duration: 1.2 });
       } catch (err) {
         console.error("Audio playback error:", err);
       }
     }
   };
 
-  // Try autoplay immediately on mount
+  // 1. Try immediate autoplay on page load
   useEffect(() => {
     startAudio();
   }, []);
 
-  // Fallback: play on first user interaction if autoplay was blocked
+  // 2. Play on ANY user interaction (tap, scroll, touch, pointer, swipe)
   useEffect(() => {
-    if (playing) return; // already playing
-    const handleFirstInteraction = () => {
-      startAudio();
+    const interactionEvents = [
+      "touchstart",
+      "touchend",
+      "pointerdown",
+      "pointerup",
+      "mousedown",
+      "click",
+      "scroll",
+      "wheel",
+      "keydown"
+    ];
+
+    const handleUserInteraction = () => {
+      if (userPausedManually.current) return;
+      if (!audioRef.current) return;
+
+      if (audioRef.current.paused) {
+        audioRef.current.volume = 0;
+        audioRef.current
+          .play()
+          .then(() => {
+            setPlaying(true);
+            gsap.to(audioRef.current, { volume: 0.4, duration: 1.5 });
+            interactionEvents.forEach((event) => {
+              window.removeEventListener(event, handleUserInteraction);
+              document.removeEventListener(event, handleUserInteraction);
+            });
+          })
+          .catch(() => {
+            // Still waiting for eligible user gesture
+          });
+      }
     };
-    window.addEventListener("click", handleFirstInteraction, { once: true });
-    window.addEventListener("touchstart", handleFirstInteraction, { once: true });
+
+    interactionEvents.forEach((event) => {
+      window.addEventListener(event, handleUserInteraction, { passive: true });
+      document.addEventListener(event, handleUserInteraction, { passive: true });
+    });
+
     return () => {
-      window.removeEventListener("click", handleFirstInteraction);
-      window.removeEventListener("touchstart", handleFirstInteraction);
+      interactionEvents.forEach((event) => {
+        window.removeEventListener(event, handleUserInteraction);
+        document.removeEventListener(event, handleUserInteraction);
+      });
     };
-  }, [playing]);
+  }, []);
+
+  // 3. Automatically pause music when closing browser, minimizing, or switching tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!audioRef.current) return;
+      if (document.hidden) {
+        // Tab hidden or browser minimized — pause immediately
+        if (playingRef.current) {
+          wasPlayingBeforeHide.current = true;
+          audioRef.current.pause();
+          setPlaying(false);
+        }
+      } else {
+        // Tab visible again — resume only if it was playing before
+        if (wasPlayingBeforeHide.current && !userPausedManually.current) {
+          wasPlayingBeforeHide.current = false;
+          audioRef.current.volume = 0.4;
+          audioRef.current
+            .play()
+            .then(() => {
+              setPlaying(true);
+            })
+            .catch(() => {});
+        }
+      }
+    };
+
+    const handleWindowExit = () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setPlaying(false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", handleWindowExit);
+    window.addEventListener("beforeunload", handleWindowExit);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", handleWindowExit);
+      window.removeEventListener("beforeunload", handleWindowExit);
+    };
+  }, []);
 
   // GSAP Cinematic Storyline Animations (Butter-Smooth 60FPS Continuous Scrubbing)
   useEffect(() => {
@@ -331,8 +419,10 @@ export default function App() {
       <audio
         ref={audioRef}
         src="/assets/audio/Neeli.mp3"
+        autoPlay
         loop
         preload="auto"
+        playsInline
       />
 
       {/* Floating Music Controller */}

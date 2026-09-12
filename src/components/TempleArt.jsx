@@ -74,9 +74,9 @@ export function GopuramLandscapeHero() {
       <div className="gopuram-hero-content">
         <div className="temple-kicker">శ్రీ సీతారామచంద్ర స్వామి దివ్య క్షేత్ర సన్నిధిలో</div>
         <div className="hero-couple-weds-box ornate-card">
-          <div className="hero-groom-name">
-            <span className="hero-prefix">{invitation.groomPrefix}</span>
-            <span className="hero-name">{invitation.groom}</span>
+          <div className="hero-bride-name">
+            <span className="hero-prefix">{invitation.bridePrefix}</span>
+            <span className="hero-name">{invitation.bride}</span>
           </div>
 
           <div className="hero-weds-badge">
@@ -85,9 +85,9 @@ export function GopuramLandscapeHero() {
             <div className="weds-line" />
           </div>
 
-          <div className="hero-bride-name">
-            <span className="hero-prefix">{invitation.bridePrefix}</span>
-            <span className="hero-name">{invitation.bride}</span>
+          <div className="hero-groom-name">
+            <span className="hero-prefix">{invitation.groomPrefix}</span>
+            <span className="hero-name">{invitation.groom}</span>
           </div>
         </div>
       </div>
