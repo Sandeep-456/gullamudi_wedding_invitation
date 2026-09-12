@@ -427,16 +427,17 @@ export default function App() {
 
       {/* Floating Music Controller */}
       <button
-        className="music-fab"
+        className={`music-fab ${playing ? "is-playing" : "is-paused"}`}
         onClick={toggleMusic}
         aria-label="Toggle music"
+        title={playing ? "సంగీతం ఆపండి" : "సంగీతం వినండి"}
       >
         <img
           src="/assets/music.png"
           alt="Music"
-          className={`music-fab-img ${playing ? "swinging" : ""}`}
+          className={`music-fab-img ${playing ? "swinging" : "gentle-pulse"}`}
         />
-        {playing && (
+        {playing ? (
           <>
             <span className="mn mn1">♪</span>
             <span className="mn mn2">♫</span>
@@ -444,8 +445,12 @@ export default function App() {
             <span className="mn mn4">♪</span>
             <span className="mn mn5">♩</span>
           </>
+        ) : (
+          <span className="play-prompt-pill">
+            <span className="play-triangle">▶</span>
+            <span className="play-prompt-text">సంగీతం</span>
+          </span>
         )}
-        {!playing && <span className="play-dot">▶</span>}
       </button>
 
       {/* SECTION 1: AUSPICIOUS INVOCATION & GANESHA OPENING */}
@@ -479,6 +484,7 @@ export default function App() {
 
       {/* SECTION 2: GOPURAM LANDSCAPE HERO WITH GROOM & BRIDE NAMES (WEDS) */}
       <section className="scene scene-gopuram-hero">
+        <Petals count={14} className="petals-subtle" />
         <GopuramLandscapeHero />
       </section>
 
@@ -635,7 +641,7 @@ export default function App() {
 
       {/* SECTION 8: FINAL THANK YOU NOTE */}
       <footer className="scene-closing">
-        <div className="closing-arch-glow" />
+        <div className="closing-bg-glow" />
         <div className="closing-card ornate-card">
           <div className="closing-om">ॐ</div>
           <h2>హృదయపూర్వక ధన్యవాదములు</h2>
@@ -650,7 +656,7 @@ export default function App() {
 
           <div className="ornate-divider">✦ ───────── ❖ ───────── ✦</div>
           <p className="copyright-note">
-            గోళ్ళమూడి & మన్నవ కుటుంబ సభ్యులు • భద్రాచలం
+            గోళ్ళమూడి &amp; మన్నవ కుటుంబ సభ్యులు
           </p>
         </div>
       </footer>

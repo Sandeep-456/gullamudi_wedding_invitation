@@ -172,28 +172,56 @@ button, a {
   filter: drop-shadow(0 4px 14px rgba(255,200,50,0.5));
 }
 
+/* Gentle pulse when awaiting click */
+.music-fab-img.gentle-pulse {
+  animation: fab-breathe 2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+}
+
+@keyframes fab-breathe {
+  0%   { transform: scale(0.96); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6)); }
+  100% { transform: scale(1.06); filter: drop-shadow(0 4px 18px rgba(255,215,100,0.7)); }
+}
+
 @keyframes fab-swing {
   0%   { transform: rotate(-12deg); }
   100% { transform: rotate(12deg); }
 }
 
-/* Play indicator dot */
-.play-dot {
+/* Play prompt pill when paused */
+.play-prompt-pill {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(120,20,25,0.95);
+  bottom: -4px;
+  right: -6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, rgba(140, 20, 25, 0.95), rgba(70, 10, 15, 0.95));
   border: 1.5px solid var(--gold-primary);
   color: var(--gold-light);
-  font-size: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 2px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 0 10px rgba(255,215,100,0.4);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: pillGlow 2s infinite alternate;
+}
+
+@keyframes pillGlow {
+  0%   { box-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 0 6px rgba(255,215,100,0.3); }
+  100% { box-shadow: 0 4px 14px rgba(0,0,0,0.7), 0 0 14px rgba(255,215,100,0.7); }
+}
+
+.play-triangle {
+  font-size: 8px;
+  color: var(--gold-primary);
+}
+
+.play-prompt-text {
+  font-family: var(--font-body, 'Mandali', sans-serif);
+  line-height: 1.2;
 }
 
 /* ═══ Floating Music Notes (♪ ♫ ♬ ♩) ═══ */
@@ -1275,86 +1303,111 @@ button, a {
   backdrop-filter: blur(8px);
 }
 
-/* SECTION 8: CLOSING */
+/* ═══ SECTION 8: CLOSING (THANK YOU NOTE) ═══ */
 .scene-closing {
-  min-height: 75vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 50px 20px;
-  background: linear-gradient(180deg, #160405 0%, #080102 100%);
+  padding: clamp(60px, 9vh, 90px) 20px clamp(45px, 7vh, 75px);
+  background: 
+    radial-gradient(circle at 50% 85%, rgba(212, 175, 55, 0.13) 0%, transparent 65%),
+    radial-gradient(ellipse at 50% 20%, #3a080d 0%, #1a0406 55%, #080102 100%);
   position: relative;
   overflow: hidden;
 }
 
-.closing-arch-glow {
+/* Radiant warm temple aura */
+.closing-bg-glow {
   position: absolute;
-  inset: 5% 15%;
-  border: 2px solid rgba(230, 195, 100, 0.25);
-  border-bottom: 0;
-  border-radius: 50% 50% 0 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(90vw, 750px);
+  height: min(90vw, 550px);
+  background: radial-gradient(circle, rgba(255, 215, 100, 0.14) 0%, rgba(212, 175, 55, 0.04) 50%, transparent 72%);
   pointer-events: none;
+  filter: blur(45px);
 }
 
 .closing-card {
+  position: relative;
   z-index: 2;
-  max-width: min(90vw, 720px);
+  max-width: min(90vw, 680px);
+  padding: clamp(28px, 5vw, 44px) clamp(22px, 4vw, 36px);
+  background: linear-gradient(150deg, rgba(46, 11, 15, 0.94) 0%, rgba(20, 5, 8, 0.97) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.6);
+  border-radius: 24px;
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(212, 175, 55, 0.22),
+    inset 0 0 25px rgba(212, 175, 55, 0.1);
+  text-align: center;
 }
 
 .closing-om {
   font-family: "Noto Serif Telugu", serif;
-  font-size: clamp(36px, 5.5vw, 60px);
-  color: var(--gold-primary);
-  text-shadow: 0 0 25px rgba(255, 215, 100, 0.4);
+  font-size: clamp(38px, 6vw, 60px);
+  color: var(--gold-light);
+  line-height: 1;
+  margin-bottom: 6px;
+  text-shadow: 0 0 24px rgba(255, 215, 100, 0.7), 0 0 40px rgba(212, 175, 55, 0.4);
 }
 
 .closing-card h2 {
   font-family: "Ramabhadra", serif;
-  font-size: clamp(24px, 3.6vw, 40px);
-  color: #fff2cc;
-  margin: 6px 0 10px;
+  font-size: clamp(23px, 4vw, 36px);
+  color: #fff4cc;
+  margin: 6px 0 12px;
+  line-height: 1.35;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 .closing-blessing {
-  font-size: clamp(14px, 1.8vw, 20px);
-  color: var(--cream-soft);
-  max-width: 600px;
-  margin: 0 auto 16px;
-  line-height: 1.7;
+  font-size: clamp(14px, 2vw, 18.5px);
+  color: #f7e8b8;
+  max-width: 540px;
+  margin: 0 auto 18px;
+  line-height: 1.75;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }
 
 .brother-special-note {
   position: relative;
-  background: rgba(65, 14, 18, 0.45);
-  border: 1px solid var(--border-gold);
-  border-radius: 12px;
-  padding: 14px 22px;
+  background: linear-gradient(140deg, rgba(75, 16, 22, 0.7) 0%, rgba(35, 7, 10, 0.8) 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
+  border-radius: 14px;
+  padding: 16px 26px;
   max-width: 500px;
-  margin: 16px auto;
+  margin: 18px auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 215, 100, 0.08);
 }
 
 .brother-special-note .quote-mark {
   position: absolute;
-  top: -10px;
-  left: 14px;
-  font-size: 28px;
+  top: -12px;
+  left: 16px;
+  font-size: 32px;
   color: var(--gold-primary);
   line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 215, 100, 0.5);
 }
 
 .brother-special-note p {
-  font-size: clamp(13px, 1.5vw, 17px);
-  color: var(--gold-light);
+  font-size: clamp(13.5px, 2vw, 17.5px);
+  color: #fff2cc;
   font-style: italic;
   font-weight: 600;
   margin: 0;
+  line-height: 1.5;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
 }
 
 .copyright-note {
-  font-size: 12px;
+  font-size: clamp(12px, 1.6vw, 14px);
   color: var(--cream-muted);
-  letter-spacing: 0.5px;
-  margin-top: 8px;
+  letter-spacing: 0.8px;
+  margin-top: 12px;
 }
 
 /* Petals Falling System */
@@ -1363,6 +1416,14 @@ button, a {
   inset: 0;
   pointer-events: none;
   z-index: 8;
+  overflow: hidden;
+}
+
+.petals-global {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
   overflow: hidden;
 }
 
@@ -1619,12 +1680,3 @@ button, a {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
-}

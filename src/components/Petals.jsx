@@ -8,7 +8,7 @@ export default function Petals({ count = 18, className = "" }) {
       left: `${(i * 17 + 5) % 94}%`,
       delay: `${(i * 0.42) % 4.5}s`,
       duration: `${6.5 + ((i * 1.2) % 4)}s`,
-      size: 20 + (i % 4) * 8,
+      size: 13 + (i % 4) * 4,
       type: types[i % types.length],
       drift: `${(i % 2 === 0 ? 1 : -1) * (25 + (i % 5) * 15)}px`,
       rotateStart: (i * 47) % 360,
